@@ -20,7 +20,6 @@ class TimeIndicatorView: UIView {
     private let label = UILabel()
 
     private let config: KinescopePlayerTimeindicatorConfiguration
-    private let formatter = DateFormatter()
 
     init(config: KinescopePlayerTimeindicatorConfiguration) {
         self.config = config
@@ -73,10 +72,26 @@ private extension TimeIndicatorView {
     }
 
     func getText(from time: TimeInterval) -> String {
-        let date = Date(timeIntervalSince1970: time)
         let duration = KinescopeVideoDuration.from(raw: time)
-        formatter.dateFormat = duration.rawValue
-        return formatter.string(from: date)
+        let totalSeconds = Int(time)
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+        
+        switch duration {
+        case .inTenMinute:
+            // "m:ss" - минуты:секунды (для < 10 минут)
+            return String(format: "%d:%02d", minutes, seconds)
+        case .inHour:
+            // "mm:ss" - минуты:секунды (для 10 минут - 1 час)
+            return String(format: "%02d:%02d", minutes, seconds)
+        case .inTenHours:
+            // "H:mm:ss" - часы:минуты:секунды (для 1-10 часов)
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        case .inDay:
+            // "HH:mm:ss" - часы:минуты:секунды (для > 10 часов)
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        }
     }
 
     func monospacedFont() -> UIFont {
