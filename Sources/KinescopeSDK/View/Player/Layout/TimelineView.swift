@@ -48,6 +48,8 @@ class TimelineView: UIControl {
             activeCircleView.isHidden = !isTouching
         }
     }
+    
+    private var isDraggingFromCircle = false
 
     weak var output: TimelineOutput?
 
@@ -56,6 +58,8 @@ class TimelineView: UIControl {
         super.init(frame: .zero)
         setupInitialState(with: config)
 
+        addTarget(self, action: #selector(startTouch),
+                  for: [UIControl.Event.touchDown])
         addTarget(self, action: #selector(endTouch),
                   for: [UIControl.Event.touchUpOutside, UIControl.Event.touchUpInside])
         addTarget(self, action: #selector(continueTouch),
@@ -73,10 +77,37 @@ class TimelineView: UIControl {
 private extension TimelineView {
 
     @objc
+    func startTouch(control: TimelineView, withEvent event: UIEvent) {
+        guard let touch = event.touches(for: control)?.first else {
+            return
+        }
+        
+        let point = touch.location(in: self)
+        // Проверяем, началось ли касание на круге (с увеличенной областью для удобства)
+        isDraggingFromCircle = isPointInCircleArea(point: point)
+        
+        if isDraggingFromCircle {
+            isTouching = true
+        } else {
+            // Если тап не на круге, просто перематываем на новую позицию
+            let relativePosition = getRelativePosition(from: point.x)
+            output?.onTimelinePositionChanged(to: relativePosition)
+            output?.onUpdate()
+            updateFrames(with: point.x)
+        }
+    }
+
+    @objc
     func continueTouch(control: TimelineView, withEvent event: UIEvent) {
         guard let touch = event.touches(for: control)?.first else {
             return
         }
+        
+        // Разрешаем перетаскивание только если оно началось с круга
+        guard isDraggingFromCircle else {
+            return
+        }
+        
         isTouching = true
 
         let point = touch.location(in: self)
@@ -91,13 +122,16 @@ private extension TimelineView {
             return
         }
 
-        isTouching = false
-
-        let point = touch.location(in: self)
-        let relativePosition = getRelativePosition(from: point.x)
-        output?.onTimelinePositionChanged(to: relativePosition)
-        output?.onUpdate()
-        updateFrames(with: point.x)
+        if isDraggingFromCircle {
+            isTouching = false
+            let point = touch.location(in: self)
+            let relativePosition = getRelativePosition(from: point.x)
+            output?.onTimelinePositionChanged(to: relativePosition)
+            output?.onUpdate()
+            updateFrames(with: point.x)
+        }
+        
+        isDraggingFromCircle = false
     }
 
 }
@@ -225,6 +259,18 @@ private extension TimelineView {
         } else {
             return coordinate
         }
+    }
+    
+    /// Проверяет, находится ли точка в области круга (с увеличенной областью для удобства касания)
+    func isPointInCircleArea(point: CGPoint) -> Bool {
+        let centerY = frame.height / 2
+        let circleCenter = CGPoint(x: circleView.center.x, y: centerY)
+        
+        // Используем увеличенный радиус для более удобного касания (радиус круга + дополнительная область)
+        let touchRadius = config.circleRadius + 10
+        
+        let distance = sqrt(pow(point.x - circleCenter.x, 2) + pow(point.y - circleCenter.y, 2))
+        return distance <= touchRadius
     }
 
 }
