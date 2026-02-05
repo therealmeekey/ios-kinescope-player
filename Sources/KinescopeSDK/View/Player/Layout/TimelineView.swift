@@ -274,3 +274,12 @@ private extension TimelineView {
     }
 
 }
+
+// MARK: - Customization (для плагина: timelineActiveColor из конфига)
+
+extension TimelineView {
+    func setActiveColor(_ color: UIColor) {
+        circleView?.backgroundColor = color
+        pastProgress?.backgroundColor = color
+    }
+}

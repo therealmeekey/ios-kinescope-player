@@ -145,6 +145,14 @@ public class KinescopeVideoPlayer: KinescopePlayer, KinescopePlayerBody, Fullscr
         self.configureAnalytic()
     }
 
+    /// Устанавливает метаданные видео для офлайн-воспроизведения (без загрузки через API).
+    /// Также обновляет options панели управления, чтобы кнопки отображались в полноэкранном режиме.
+    public func setVideoForOffline(_ video: KinescopeVideo) {
+        self.video = video
+        _ = makePlayerOptions(from: video)
+        view?.set(options: options)
+    }
+
     public func play() {
         if let video {
             if !strategy.player.isReadyToPlay {

@@ -50,3 +50,33 @@ public struct KinescopeVideo: Codable {
         case drm
     }
 }
+
+// MARK: - Offline stub for native fullscreen
+
+public extension KinescopeVideo {
+    /// Минимальные метаданные для офлайн-воспроизведения
+    static func offlineStub(id: String, title: String = "Offline") -> KinescopeVideo {
+        KinescopeVideo(
+            id: id,
+            workspaceId: nil,
+            projectId: "",
+            folderId: nil,
+            type: .vod,
+            title: title,
+            description: "",
+            status: nil,
+            progress: nil,
+            duration: 0,
+            qualityMap: nil,
+            chapters: KinescopeVideoChapter(items: nil),
+            poster: nil,
+            attachments: nil,
+            subtitles: nil,
+            hlsLink: "",
+            dashLink: nil,
+            live: nil,
+            analytic: nil,
+            drm: nil
+        )
+    }
+}

@@ -93,6 +93,11 @@ extension PlayerControlView: PlayerControlInput {
         optionsMenu.set(subtitleOn: subtitleOn)
     }
 
+    /// Установить цвет просмотренной части таймлайна (для плагина: timelineActiveColor из конфига)
+    func setTimelineActiveColor(_ color: UIColor) {
+        timeline.setActiveColor(color)
+    }
+
 }
 
 // MARK: - PlayerControlOptionsOutput

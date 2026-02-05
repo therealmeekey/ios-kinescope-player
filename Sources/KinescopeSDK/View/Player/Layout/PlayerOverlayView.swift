@@ -71,6 +71,14 @@ extension PlayerOverlayView: PlayerOverlayInput {
     }
 }
 
+// MARK: - Customization (для плагина: playButtonColor из конфига)
+
+extension PlayerOverlayView {
+    func setPlayBackgroundColor(_ color: UIColor) {
+        playBackgroundCircle.backgroundColor = color
+    }
+}
+
 // MARK: - Private
 
 private extension PlayerOverlayView {

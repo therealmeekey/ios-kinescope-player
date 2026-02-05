@@ -161,6 +161,26 @@ public extension KinescopePlayerView {
         didTap(isSelected: !shown)
     }
 
+    /// Установить кнопки панели управления (для офлайн-режима и др., когда видео не загружается через SDK).
+    /// - Parameter options: массив опций, например [.more, .settings, .fullscreen, .pip]
+    public func setPlayerOptions(_ options: [KinescopePlayerOption]) {
+        set(options: options)
+    }
+
+    public func setPlayerOptionsExpanded(_ expanded: Bool) {
+        controlPanel?.expanded = expanded
+    }
+
+    /// Установить цвет кнопки play/pause в оверлее (для плагина: playButtonColor из конфига)
+    public func setPlayButtonColor(_ color: UIColor) {
+        overlay?.setPlayBackgroundColor(color)
+    }
+
+    /// Установить цвет просмотренной части таймлайна (для плагина: timelineActiveColor из конфига)
+    public func setTimelineActiveColor(_ color: UIColor) {
+        controlPanel?.setTimelineActiveColor(color)
+    }
+
 }
 
 // MARK: - Private
